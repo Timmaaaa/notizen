@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Pfad zur Datei mit bereits gesehenen Videos
+seen_file="$HOME/.cache/schon-gesehen"
+
+
+rss_url=$(curl -s "https://www.youtube.com/@PaulDinningVideosforCats" | grep -oP 'rssUrl":"\K[^"]+')
+
+links_list=$(curl -s $rss_url | grep -oP 'href="\K[^"]+watch[^"]+')
+
+for LINK in $links_list
+do
+        if ! grep -q "$LINK" "$seen_file"; then
+                echo "Öffne neues Video: $LINK"
+                firefox $LINK
+                echo $LINK >> $seen_file
+        else
+                echo {$LINK,'bereits gesehen.'}
+        fi
+done
